@@ -33,16 +33,23 @@ jobs:
       - name: Process built JARs
         run: |
           mkdir -p build/processed
-          for jar in build/libs/*/*.jar; do
-            if [[ ! "$jar" == *"dev"* ]]; then
+          find . -type f -name "*.jar" -path "*/build/libs/*" | while read -r jar; do
+            if [[ ! "$jar" == *"-sources"* ]] && [[ ! "$jar" == *"-dev"* ]] && [[ ! "$jar" == *"-refmap"* ]]; then
               filename=$(basename "$jar")
-              version=$(echo "$filename" | grep -o '1\.21\.[0-9]\+')
-              new_name="mining-stuff-${version}-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}.jar"
+              raw_version=${filename#mining-stuff-}
+              clean_version=${raw_version%.jar}
+              if [[ "$raw_version" == "$filename" ]]; then
+                 echo "Skipping non-mod jar: $filename"
+                 continue
+              fi
+
+              new_name="mining-stuff-${clean_version}-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}.jar"
+              echo "Processing: $new_name"
               cp "$jar" "build/processed/$new_name"
             fi
           done
       - name: Upload built mod JARs
         uses: actions/upload-artifact@v4.3.0
         with:
-          name: nebula-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}
+          name: stella-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}
           path: build/processed/*.jar
