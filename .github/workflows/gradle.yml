@@ -37,7 +37,7 @@ jobs:
             if [[ ! "$jar" == *"dev"* ]]; then
               filename=$(basename "$jar")
               version=$(echo "$filename" | grep -o '1\.21\.[0-9]\+')
-              new_name="nebula-${version}-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}.jar"
+              new_name="mining-stuff-${version}-fabric-nightly-${{ steps.commit-count.outputs.commit-number }}.jar"
               cp "$jar" "build/processed/$new_name"
             fi
           done
