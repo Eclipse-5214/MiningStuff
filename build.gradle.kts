@@ -32,7 +32,15 @@ dependencies {
     implementation("fabric-api".mc(mc))
     implementation(libs.fabric.loader)
     implementation(libs.fabric.language.kotlin)
-    implementation("stella".mc(mc))
+    implementation("stella".mc(mc)) {
+        exclude(group = "tech.thatgravyboat", module = "skyblock-api")
+    }
+
+    api(libs.skyblock.api) {
+        capabilities { requireCapability("tech.thatgravyboat:skyblock-api-$mc") }
+    }
+
+
 }
 
 ksp {
@@ -48,9 +56,10 @@ loom {
     }
 
     runConfigs.all {
-        ideConfigGenerated(true)
-        vmArgs("-Dmixin.debug.export=true") // Exports transformed classes for debugging
-        runDir = "../../run" // Shares the run directory between versions
+        preferGradleTask = true
+        generateRunConfig = true
+        runDirectory = rootProject.file("run") // Shares the run directory between versions
+        jvmArguments.add("-Dmixin.debug.export=true") // Exports transformed classes for debugging
     }
 }
 
